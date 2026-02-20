@@ -5,13 +5,14 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, typography } from '../../src/constants/theme';
 import { useRecipes } from '../../src/context/RecipeContext';
 
-function MetaBadge({ icon, label }) {
+function MetaBadge({ iconName, label }) {
   return (
     <View style={styles.badge}>
-      <Text style={styles.badgeIcon}>{icon}</Text>
+      <Ionicons name={iconName} size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
       <Text style={styles.badgeText}>{label}</Text>
     </View>
   );
@@ -31,7 +32,7 @@ function IngredientRow({ text, isLast }) {
   return (
     <View>
       <View style={styles.ingredientRow}>
-        <Text style={styles.bullet}>●</Text>
+        <Ionicons name="ellipse" size={6} color={colors.gold} style={{ marginRight: 12, marginTop: 6 }} />
         <Text style={[typography.bodyLarge, { flex: 1 }]}>{text}</Text>
       </View>
       {!isLast && <View style={styles.divider} />}
@@ -100,7 +101,10 @@ export default function RecipeDetailScreen() {
         {/* Back button overlay */}
         <SafeAreaView style={styles.backOverlay}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '600' }}>← Back</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Ionicons name="arrow-back" size={18} color="#FFF" />
+              <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '600' }}>Back</Text>
+            </View>
           </TouchableOpacity>
         </SafeAreaView>
 
@@ -110,10 +114,10 @@ export default function RecipeDetailScreen() {
           {/* Meta badges */}
           <View style={styles.badges}>
             {d.readyInMinutes != null && (
-              <MetaBadge icon="⏱" label={`${d.readyInMinutes} min`} />
+              <MetaBadge iconName="timer-outline" label={`${d.readyInMinutes} min`} />
             )}
             {d.servings != null && (
-              <MetaBadge icon="👥" label={`${d.servings} servings`} />
+              <MetaBadge iconName="people-outline" label={`${d.servings} servings`} />
             )}
           </View>
 
@@ -200,7 +204,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceLight,
     borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6,
   },
-  badgeIcon: { fontSize: 14, marginRight: 6 },
   badgeText: { fontSize: 14, color: colors.textSecondary },
   macroRow: {
     flexDirection: 'row', marginTop: 12, gap: 8,
@@ -218,7 +221,6 @@ const styles = StyleSheet.create({
   ingredientRow: {
     flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10,
   },
-  bullet: { color: colors.gold, fontSize: 6, marginRight: 12, marginTop: 6 },
   divider: { height: 1, backgroundColor: colors.surfaceLight, marginLeft: 16 },
   stepRow: {
     flexDirection: 'row', marginBottom: 20,

@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
 const configs = {
-  safe: { color: colors.safe, icon: '✓', label: 'Fasting Safe' },
-  notSafe: { color: colors.notSafe, icon: '✕', label: 'Not Fasting Safe' },
-  caution: { color: colors.caution, icon: '⚠', label: 'Caution' },
+  safe: { color: colors.safe, icon: 'checkmark-circle', label: 'Fasting Safe' },
+  notSafe: { color: colors.notSafe, icon: 'close-circle', label: 'Not Fasting Safe' },
+  caution: { color: colors.caution, icon: 'warning', label: 'Caution' },
 };
 
 export default function VerdictBanner({ verdict }) {
@@ -16,7 +17,7 @@ export default function VerdictBanner({ verdict }) {
       backgroundColor: config.color + '26',
       borderColor: config.color + '4D',
     }]}>
-      <Text style={[styles.icon, { color: config.color }]}>{config.icon}</Text>
+      <Ionicons name={config.icon} size={28} color={config.color} style={{ marginRight: 12 }} />
       <Text style={[styles.label, { color: config.color }]}>{config.label}</Text>
     </View>
   );
@@ -32,11 +33,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  icon: {
-    fontSize: 28,
-    marginRight: 12,
-    fontWeight: '700',
   },
   label: {
     fontSize: 20,

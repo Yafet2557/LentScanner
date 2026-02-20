@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, typography } from '../src/constants/theme';
 import { useScan } from '../src/context/ScanContext';
 import VerdictBanner from '../src/components/VerdictBanner';
@@ -27,7 +28,7 @@ export default function ScanResultScreen() {
   if (error) {
     return (
       <SafeAreaView style={styles.centered}>
-        <Text style={{ fontSize: 48, marginBottom: 20 }}>⚠️</Text>
+        <Ionicons name="warning-outline" size={48} color={colors.caution} style={{ marginBottom: 20 }} />
         <Text style={[typography.bodyLarge, { textAlign: 'center', marginBottom: 32 }]}>{error}</Text>
         <TouchableOpacity style={styles.btn} onPress={scanAgain}>
           <Text style={styles.btnText}>Try Again</Text>
@@ -56,7 +57,7 @@ export default function ScanResultScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={goHome}>
-          <Text style={{ color: colors.textPrimary, fontSize: 16 }}>✕</Text>
+          <Ionicons name="close" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Scan Result</Text>
         <View style={{ width: 20 }} />
@@ -129,11 +130,17 @@ export default function ScanResultScreen() {
               style={styles.btn}
               onPress={() => router.push('/recipes')}
             >
-              <Text style={styles.btnText}>🍽️  Find Lenten Recipes</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Ionicons name="restaurant-outline" size={18} color={colors.background} />
+                <Text style={styles.btnText}>Find Lenten Recipes</Text>
+              </View>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={[styles.btnOutline, { marginTop: 12 }]} onPress={scanAgain}>
-            <Text style={styles.btnOutlineText}>📷  Scan Another Product</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="scan-outline" size={18} color={colors.gold} />
+              <Text style={styles.btnOutlineText}>Scan Another Product</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </ScrollView>

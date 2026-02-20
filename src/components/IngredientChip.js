@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 import { categories } from '../constants/nonFastingIngredients';
 
@@ -27,7 +28,7 @@ export default function IngredientChip({ label, onRemove, category }) {
       </Text>
       {onRemove && (
         <TouchableOpacity onPress={onRemove} hitSlop={8}>
-          <Text style={[styles.close, { color: chipColor }]}>✕</Text>
+          <Ionicons name="close" size={14} color={chipColor} style={{ marginLeft: 6 }} />
         </TouchableOpacity>
       )}
     </View>
@@ -47,10 +48,5 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-  },
-  close: {
-    marginLeft: 6,
-    fontSize: 12,
-    fontWeight: '600',
   },
 });

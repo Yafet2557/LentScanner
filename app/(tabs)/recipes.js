@@ -50,7 +50,7 @@ function DropdownSelect({ items, selectedValue, onSelect, placeholder }) {
         <Text style={[styles.dropdownText, !selected?.value && { color: colors.textMuted }]}>
           {selected?.label || placeholder}
         </Text>
-        <Text style={styles.dropdownArrow}>{open ? '▲' : '▼'}</Text>
+        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={14} color={colors.textMuted} />
       </TouchableOpacity>
       {open && (
         <View style={styles.dropdownMenu}>
@@ -153,7 +153,7 @@ export default function RecipesScreen() {
                       {item.imageUrl && (
                         <View style={styles.favImageWrap}>
                           <View style={styles.favImage}>
-                            <Text style={{ color: colors.textMuted }}>🍽️</Text>
+                            <Ionicons name="restaurant-outline" size={20} color={colors.textMuted} />
                           </View>
                         </View>
                       )}
@@ -418,7 +418,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 14, marginBottom: 10,
   },
   dropdownText: { color: colors.textPrimary, fontSize: 15 },
-  dropdownArrow: { color: colors.textMuted, fontSize: 12 },
   dropdownMenu: {
     backgroundColor: colors.surfaceLight, borderRadius: 12,
     marginTop: -6, marginBottom: 10, overflow: 'hidden',

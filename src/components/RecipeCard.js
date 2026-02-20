@@ -3,10 +3,10 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
-function Pill({ icon, text, highlight = false }) {
+function Pill({ iconName, text, highlight = false }) {
   return (
     <View style={[styles.pill, highlight && styles.pillHighlight]}>
-      <Text style={[styles.pillIcon, highlight && { color: colors.gold }]}>{icon}</Text>
+      <Ionicons name={iconName} size={12} color={highlight ? colors.gold : colors.textMuted} style={{ marginRight: 4 }} />
       <Text style={[styles.pillText, highlight && styles.pillTextHighlight]}>{text}</Text>
     </View>
   );
@@ -37,17 +37,17 @@ export default function RecipeCard({ recipe, onPress, isFavorite, onToggleFavori
         <Text style={styles.title} numberOfLines={2}>{recipe.title}</Text>
         <View style={styles.pills}>
           {recipe.readyInMinutes != null && (
-            <Pill icon="⏱" text={`${recipe.readyInMinutes} min`} />
+            <Pill iconName="timer-outline" text={`${recipe.readyInMinutes} min`} />
           )}
           {recipe.proteinGrams != null && (
             <Pill
-              icon="💪"
+              iconName="barbell-outline"
               text={`${Math.round(recipe.proteinGrams)}g protein`}
               highlight
             />
           )}
           {recipe.calories != null && (
-            <Pill icon="🔥" text={`${Math.round(recipe.calories)} cal`} />
+            <Pill iconName="flame-outline" text={`${Math.round(recipe.calories)} cal`} />
           )}
         </View>
       </View>
@@ -107,11 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gold + '26',
     borderWidth: 1,
     borderColor: colors.gold + '4D',
-  },
-  pillIcon: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginRight: 4,
   },
   pillText: {
     fontSize: 12,

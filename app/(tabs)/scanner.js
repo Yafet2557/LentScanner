@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../src/constants/theme';
 import { useScan } from '../../src/context/ScanContext';
 
@@ -54,12 +55,14 @@ export default function ScannerScreen() {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.headerBtn}>← Back</Text>
+        <TouchableOpacity style={styles.headerBtnWrap} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={20} color="#FFF" />
+          <Text style={styles.headerBtn}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Scan Product</Text>
-        <TouchableOpacity onPress={() => setTorch((t) => !t)}>
-          <Text style={styles.headerBtn}>{torch ? '🔦 On' : '🔦 Off'}</Text>
+        <TouchableOpacity style={styles.headerBtnWrap} onPress={() => setTorch((t) => !t)}>
+          <Ionicons name={torch ? 'flashlight' : 'flashlight-outline'} size={20} color="#FFF" />
+          <Text style={styles.headerBtn}>{torch ? 'On' : 'Off'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 16, zIndex: 10,
   },
+  headerBtnWrap: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerBtn: { color: '#FFF', fontSize: 15, fontWeight: '500' },
   headerTitle: { color: '#FFF', fontSize: 18, fontWeight: '700' },
   overlayContainer: {
