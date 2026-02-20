@@ -4,8 +4,8 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
-import { colors } from '../src/constants/theme';
-import { useScan } from '../src/context/ScanContext';
+import { colors } from '../../src/constants/theme';
+import { useScan } from '../../src/context/ScanContext';
 
 export default function ScannerScreen() {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function ScannerScreen() {
     setIsProcessing(true);
 
     await scanBarcode(data);
-    router.replace('/scan-result');
+    router.push('/scan-result');
   };
 
   return (
@@ -69,7 +69,6 @@ export default function ScannerScreen() {
         <View style={styles.overlayMiddle}>
           <View style={styles.overlaySide} />
           <View style={styles.frame}>
-            {/* Corner accents */}
             <View style={[styles.corner, styles.cornerTL]} />
             <View style={[styles.corner, styles.cornerTR]} />
             <View style={[styles.corner, styles.cornerBL]} />

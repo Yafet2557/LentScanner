@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, typography } from '../src/constants/theme';
-import { useRecipes } from '../src/context/RecipeContext';
-import IngredientChip from '../src/components/IngredientChip';
-import RecipeCard from '../src/components/RecipeCard';
+import { colors, typography } from '../../src/constants/theme';
+import { useRecipes } from '../../src/context/RecipeContext';
+import IngredientChip from '../../src/components/IngredientChip';
+import RecipeCard from '../../src/components/RecipeCard';
 
 const MEAL_TYPES = [
   { label: 'Any meal type', value: null },
@@ -86,14 +86,8 @@ export default function RecipesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={{ color: colors.textPrimary, fontSize: 16 }}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Recipe Finder</Text>
-        <View style={{ width: 50 }} />
-      </View>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <Text style={styles.screenTitle}>Recipe Finder</Text>
 
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         {/* Ingredient input */}
@@ -221,11 +215,10 @@ export default function RecipesScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 12,
+  screenTitle: {
+    fontSize: 20, fontWeight: '700', color: colors.textPrimary,
+    textAlign: 'center', paddingVertical: 12,
   },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: colors.textPrimary },
   scroll: { paddingHorizontal: 20, paddingTop: 8 },
   inputRow: { flexDirection: 'row', marginBottom: 12 },
   input: {
@@ -293,7 +286,7 @@ const styles = StyleSheet.create({
   bottomBar: {
     paddingHorizontal: 20,
     paddingTop: 8,
-    paddingBottom: 28,
+    paddingBottom: 8,
     backgroundColor: colors.background,
     borderTopWidth: 1,
     borderTopColor: colors.surfaceLight,

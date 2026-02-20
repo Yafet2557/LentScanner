@@ -42,3 +42,4 @@ src/config.js
 # generated native folders
 /ios
 /android
+claude-modular/

@@ -4,10 +4,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, typography } from '../src/constants/theme';
-import { useScan } from '../src/context/ScanContext';
-import LentCountdown from '../src/components/LentCountdown';
-import ScanHistoryTile from '../src/components/ScanHistoryTile';
+import { colors, typography } from '../../src/constants/theme';
+import { useScan } from '../../src/context/ScanContext';
+import LentCountdown from '../../src/components/LentCountdown';
+import ScanHistoryTile from '../../src/components/ScanHistoryTile';
 
 function ActionCard({ icon, label, onPress }) {
   return (

@@ -16,7 +16,11 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: colors.background },
             animation: 'slide_from_right',
           }}
-        />
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="scan-result" options={{ headerShown: false }} />
+          <Stack.Screen name="recipe-detail/[id]" options={{ headerShown: false }} />
+        </Stack>
       </RecipeProvider>
     </ScanProvider>
   );
