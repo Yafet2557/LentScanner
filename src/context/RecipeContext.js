@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { searchRecipes as apiSearch, getRecipeDetail as apiDetail } from '../services/spoonacular';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  searchRecipes as apiSearch,
+  getRecipeDetail as apiDetail,
+  getPopularRecipes as apiPopular,
+  getRecipesByCategory as apiCategory,
+} from '../services/spoonacular';
 
 const RecipeContext = createContext(null);
+
+const FAVORITES_KEY = 'favorite_recipes';
 
 export function RecipeProvider({ children }) {
   // Ingredient list
@@ -17,9 +25,66 @@ export function RecipeProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Popular / category recipes (browse mode)
+  const [popularRecipes, setPopularRecipes] = useState([]);
+  const [isLoadingPopular, setIsLoadingPopular] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   // Recipe detail
   const [recipeDetail, setRecipeDetail] = useState(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+
+  // Favorites
+  const [favorites, setFavorites] = useState([]);
+
+  // Load favorites from storage on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const json = await AsyncStorage.getItem(FAVORITES_KEY);
+        if (json) setFavorites(JSON.parse(json));
+      } catch (_) {}
+    })();
+  }, []);
+
+  const saveFavorites = useCallback(async (newFavs) => {
+    try {
+      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavs));
+    } catch (_) {}
+  }, []);
+
+  const toggleFavorite = useCallback((recipe) => {
+    setFavorites((prev) => {
+      const exists = prev.some((f) => f.id === recipe.id);
+      const updated = exists
+        ? prev.filter((f) => f.id !== recipe.id)
+        : [recipe, ...prev];
+      saveFavorites(updated);
+      return updated;
+    });
+  }, [saveFavorites]);
+
+  const isFavorite = useCallback((recipeId) => {
+    return favorites.some((f) => f.id === recipeId);
+  }, [favorites]);
+
+  // Fetch popular recipes (called on first load of Recipes tab)
+  const fetchPopular = useCallback(async (category = null) => {
+    setIsLoadingPopular(true);
+    setSelectedCategory(category);
+    setError(null);
+
+    try {
+      const results = category
+        ? await apiCategory(category)
+        : await apiPopular();
+      setPopularRecipes(results);
+    } catch (e) {
+      setError(e.message || 'Failed to load recipes');
+    }
+
+    setIsLoadingPopular(false);
+  }, []);
 
   const addIngredient = useCallback((ingredient) => {
     const trimmed = ingredient.trim().toLowerCase();
@@ -87,6 +152,11 @@ export function RecipeProvider({ children }) {
     setRecipeDetail(null);
   }, []);
 
+  const clearSearch = useCallback(() => {
+    setRecipes([]);
+    setError(null);
+  }, []);
+
   return (
     <RecipeContext.Provider
       value={{
@@ -95,10 +165,14 @@ export function RecipeProvider({ children }) {
         mealType,
         maxReadyTime,
         recipes,
+        popularRecipes,
+        isLoadingPopular,
+        selectedCategory,
         recipeDetail,
         isLoading,
         isLoadingDetail,
         error,
+        favorites,
         addIngredient,
         removeIngredient,
         clearIngredients,
@@ -106,8 +180,12 @@ export function RecipeProvider({ children }) {
         setMealType,
         setMaxReadyTime,
         searchRecipes,
+        fetchPopular,
         loadRecipeDetail,
         clearRecipeDetail,
+        clearSearch,
+        toggleFavorite,
+        isFavorite,
       }}
     >
       {children}

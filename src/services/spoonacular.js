@@ -67,6 +67,78 @@ export async function searchRecipes({
  *     proteinGrams, carbsGrams, fatGrams, calories,
  *     ingredients, instructions }
  */
+/**
+ * Fetch popular vegan recipes (shown on first load of Recipes tab).
+ */
+export async function getPopularRecipes() {
+  try {
+    const { data } = await client.get('/recipes/complexSearch', {
+      params: {
+        diet: 'vegan',
+        sort: 'popularity',
+        addRecipeNutrition: true,
+        number: 8,
+      },
+    });
+    const results = data.results || [];
+    return results.map((item) => {
+      const nutrients = item.nutrition?.nutrients;
+      return {
+        id: item.id,
+        title: item.title,
+        imageUrl: item.image || null,
+        readyInMinutes: item.readyInMinutes || null,
+        proteinGrams: findNutrient(nutrients, 'Protein'),
+        calories: findNutrient(nutrients, 'Calories'),
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to fetch popular recipes: ${error.message}`);
+  }
+}
+
+/**
+ * Fetch recipes by category (meal type or tag).
+ */
+export async function getRecipesByCategory(category) {
+  try {
+    const params = {
+      diet: 'vegan',
+      addRecipeNutrition: true,
+      number: 8,
+    };
+
+    // Map category names to Spoonacular params
+    if (category === 'high-protein') {
+      params.minProtein = 20;
+      params.sort = 'protein';
+      params.sortDirection = 'desc';
+    } else if (category === 'quick') {
+      params.maxReadyTime = 20;
+      params.sort = 'time';
+    } else {
+      params.type = category;
+      params.sort = 'popularity';
+    }
+
+    const { data } = await client.get('/recipes/complexSearch', { params });
+    const results = data.results || [];
+    return results.map((item) => {
+      const nutrients = item.nutrition?.nutrients;
+      return {
+        id: item.id,
+        title: item.title,
+        imageUrl: item.image || null,
+        readyInMinutes: item.readyInMinutes || null,
+        proteinGrams: findNutrient(nutrients, 'Protein'),
+        calories: findNutrient(nutrients, 'Calories'),
+      };
+    });
+  } catch (error) {
+    throw new Error(`Failed to fetch recipes: ${error.message}`);
+  }
+}
+
 export async function getRecipeDetail(recipeId) {
   try {
     const { data } = await client.get(`/recipes/${recipeId}/information`, {

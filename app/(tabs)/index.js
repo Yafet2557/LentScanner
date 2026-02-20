@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, FlatList, StyleSheet,
+  View, Text, ScrollView, TouchableOpacity, FlatList,
+  RefreshControl, StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography } from '../../src/constants/theme';
 import { useScan } from '../../src/context/ScanContext';
 import LentCountdown from '../../src/components/LentCountdown';
 import ScanHistoryTile from '../../src/components/ScanHistoryTile';
 
-function ActionCard({ icon, label, onPress }) {
+function ActionCard({ iconName, label, onPress }) {
   return (
     <TouchableOpacity style={styles.actionCard} onPress={onPress} activeOpacity={0.7}>
-      <Text style={styles.actionIcon}>{icon}</Text>
+      <Ionicons name={iconName} size={32} color={colors.gold} />
       <Text style={styles.actionLabel}>{label}</Text>
     </TouchableOpacity>
   );
@@ -20,28 +22,50 @@ function ActionCard({ icon, label, onPress }) {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { history, loadHistory } = useScan();
+  const { history, loadHistory, scanBarcode } = useScan();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadHistory();
   }, [loadHistory]);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadHistory();
+    setRefreshing(false);
+  }, [loadHistory]);
+
+  const handleHistoryTap = async (entry) => {
+    await scanBarcode(entry.barcode);
+    router.push('/scan-result');
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.gold}
+            colors={[colors.gold]}
+          />
+        }
+      >
         <Text style={[typography.headlineLarge, { marginBottom: 20 }]}>LentScanner</Text>
 
         <LentCountdown />
 
         <View style={styles.actions}>
           <ActionCard
-            icon="📷"
+            iconName="scan-outline"
             label="Scan Product"
             onPress={() => router.push('/scanner')}
           />
           <View style={{ width: 12 }} />
           <ActionCard
-            icon="🍽️"
+            iconName="restaurant-outline"
             label="Find Recipes"
             onPress={() => router.push('/recipes')}
           />
@@ -54,7 +78,12 @@ export default function HomeScreen() {
               horizontal
               data={history}
               keyExtractor={(item, i) => item.barcode + i}
-              renderItem={({ item }) => <ScanHistoryTile entry={item} />}
+              renderItem={({ item }) => (
+                <ScanHistoryTile
+                  entry={item}
+                  onPress={() => handleHistoryTap(item)}
+                />
+              )}
               ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
               showsHorizontalScrollIndicator={false}
             />
@@ -86,10 +115,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.surfaceLight,
     alignItems: 'center',
-  },
-  actionIcon: {
-    fontSize: 32,
-    marginBottom: 10,
+    gap: 10,
   },
   actionLabel: {
     fontSize: 15,

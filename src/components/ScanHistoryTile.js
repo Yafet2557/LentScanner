@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors } from '../constants/theme';
 
 const verdictColors = {
@@ -8,14 +8,18 @@ const verdictColors = {
   caution: colors.caution,
 };
 
-export default function ScanHistoryTile({ entry }) {
+export default function ScanHistoryTile({ entry, onPress }) {
   const dotColor = verdictColors[entry.verdict] || colors.caution;
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+    >
       <View style={[styles.dot, { backgroundColor: dotColor }]} />
       <Text style={styles.name} numberOfLines={2}>{entry.productName}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

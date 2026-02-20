@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
 function Pill({ icon, text, highlight = false }) {
@@ -11,11 +12,26 @@ function Pill({ icon, text, highlight = false }) {
   );
 }
 
-export default function RecipeCard({ recipe, onPress }) {
+export default function RecipeCard({ recipe, onPress, isFavorite, onToggleFavorite }) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       {recipe.imageUrl && (
-        <Image source={{ uri: recipe.imageUrl }} style={styles.image} />
+        <View>
+          <Image source={{ uri: recipe.imageUrl }} style={styles.image} />
+          {onToggleFavorite && (
+            <TouchableOpacity
+              style={styles.heartBtn}
+              onPress={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+              hitSlop={8}
+            >
+              <Ionicons
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={22}
+                color={isFavorite ? colors.notSafe : '#FFF'}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       )}
       <View style={styles.body}>
         <Text style={styles.title} numberOfLines={2}>{recipe.title}</Text>
@@ -53,6 +69,17 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 160,
+  },
+  heartBtn: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 16,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   body: {
     padding: 12,
