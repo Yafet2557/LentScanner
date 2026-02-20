@@ -1,16 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../src/constants/theme';
-
-function TabIcon({ label, focused }) {
-  const icons = { Home: '🏠', Scan: '📷', Recipes: '🍽️' };
-  return (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>
-      {icons[label] || '●'}
-    </Text>
-  );
-}
 
 export default function TabsLayout() {
   return (
@@ -21,8 +12,8 @@ export default function TabsLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.surfaceLight,
           borderTopWidth: 1,
-          height: 65,
-          paddingBottom: 8,
+          height: 56,
+          paddingBottom: 6,
           paddingTop: 6,
         },
         tabBarActiveTintColor: colors.gold,
@@ -37,21 +28,27 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => <TabIcon label="Home" focused={focused} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="scanner"
         options={{
           title: 'Scan',
-          tabBarIcon: ({ focused }) => <TabIcon label="Scan" focused={focused} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="scan-outline" size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="recipes"
         options={{
           title: 'Recipes',
-          tabBarIcon: ({ focused }) => <TabIcon label="Recipes" focused={focused} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="restaurant-outline" size={22} color={color} />
+          ),
         }}
       />
     </Tabs>
