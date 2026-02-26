@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, Text, ScrollView, Image, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { colors, typography } from '../src/constants/theme';
 import { useScan } from '../src/context/ScanContext';
 import VerdictBanner from '../src/components/VerdictBanner';
@@ -16,6 +17,18 @@ export default function ScanResultScreen() {
 
   const goHome = () => { clearCurrentScan(); router.replace('/'); };
   const scanAgain = () => { clearCurrentScan(); router.replace('/scanner'); };
+
+  // Fire haptic once when the verdict arrives
+  useEffect(() => {
+    if (!currentResult) return;
+    if (currentResult.verdict === 'safe') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else if (currentResult.verdict === 'notSafe') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    }
+  }, [currentResult]);
 
   if (isLoading) {
     return (

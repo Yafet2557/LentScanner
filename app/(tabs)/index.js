@@ -149,10 +149,26 @@ export default function HomeScreen() {
         )}
 
         {/* Recent Scans */}
-        {history.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Scans</Text>
-            {history.slice(0, 5).map((entry, i) => (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recent Scans</Text>
+          {history.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="scan-outline" size={36} color={colors.gold} />
+              <Text style={styles.emptyTitle}>No scans yet</Text>
+              <Text style={styles.emptySubtitle}>
+                Scan a barcode to instantly check if a product is fasting safe
+              </Text>
+              <TouchableOpacity
+                style={styles.emptyBtn}
+                onPress={() => router.push('/scanner')}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="scan-outline" size={16} color={colors.background} />
+                <Text style={styles.emptyBtnText}>Scan a Product</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            history.slice(0, 5).map((entry, i) => (
               <TouchableOpacity
                 key={entry.barcode + i}
                 style={styles.scanRow}
@@ -172,9 +188,9 @@ export default function HomeScreen() {
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
               </TouchableOpacity>
-            ))}
-          </View>
-        )}
+            ))
+          )}
+        </View>
 
         <View style={{ height: 30 }} />
       </ScrollView>
@@ -283,5 +299,41 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
     marginTop: 2,
+  },
+  emptyState: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 28,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.surfaceLight,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginTop: 4,
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 19,
+  },
+  emptyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.gold,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 8,
+  },
+  emptyBtnText: {
+    color: colors.background,
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
