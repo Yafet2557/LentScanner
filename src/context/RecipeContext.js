@@ -6,12 +6,16 @@ import {
   getPopularRecipes as apiPopular,
   getRecipesByCategory as apiCategory,
 } from '../services/spoonacular';
+import { useAuth } from './AuthContext';
+import { supabase } from '../lib/supabase';
 
 const RecipeContext = createContext(null);
 
 const FAVORITES_KEY = 'favorite_recipes';
 
 export function RecipeProvider({ children }) {
+  const { user } = useAuth();
+
   // Ingredient list
   const [ingredients, setIngredients] = useState([]);
 
@@ -37,32 +41,62 @@ export function RecipeProvider({ children }) {
   // Favorites
   const [favorites, setFavorites] = useState([]);
 
-  // Load favorites from storage on mount
-  useEffect(() => {
-    (async () => {
-      try {
+  const loadFavorites = useCallback(async () => {
+    try {
+      if (user) {
+        // Logged in — fetch from Supabase
+        const { data } = await supabase
+          .from('favorite_recipes')
+          .select('recipe_data')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (data) {
+          setFavorites(data.map((row) => row.recipe_data));
+        }
+      } else {
+        // Guest — use local storage
         const json = await AsyncStorage.getItem(FAVORITES_KEY);
         if (json) setFavorites(JSON.parse(json));
-      } catch (_) {}
-    })();
-  }, []);
-
-  const saveFavorites = useCallback(async (newFavs) => {
-    try {
-      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavs));
+      }
     } catch (_) {}
-  }, []);
+  }, [user]);
 
-  const toggleFavorite = useCallback((recipe) => {
-    setFavorites((prev) => {
-      const exists = prev.some((f) => f.id === recipe.id);
-      const updated = exists
-        ? prev.filter((f) => f.id !== recipe.id)
-        : [recipe, ...prev];
-      saveFavorites(updated);
-      return updated;
-    });
-  }, [saveFavorites]);
+  // Reload favorites whenever auth state changes (login or logout)
+  useEffect(() => {
+    loadFavorites();
+  }, [user]);
+
+  const toggleFavorite = useCallback(async (recipe) => {
+    const exists = favorites.some((f) => f.id === recipe.id);
+    const updated = exists
+      ? favorites.filter((f) => f.id !== recipe.id)
+      : [recipe, ...favorites];
+
+    setFavorites(updated);
+
+    if (user) {
+      // Logged in — insert or delete a single row in Supabase
+      if (exists) {
+        await supabase
+          .from('favorite_recipes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('recipe_id', recipe.id);
+      } else {
+        await supabase.from('favorite_recipes').insert({
+          user_id: user.id,
+          recipe_id: recipe.id,
+          recipe_data: recipe,
+        });
+      }
+    } else {
+      // Guest — save full array to AsyncStorage
+      try {
+        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+      } catch (_) {}
+    }
+  }, [user, favorites]);
 
   const isFavorite = useCallback((recipeId) => {
     return favorites.some((f) => f.id === recipeId);
