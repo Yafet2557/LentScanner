@@ -1,0 +1,38 @@
+{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "aab"
+      },
+      "ios": {
+        "buildType": "app-store"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccount": "TODO: Add service account key path",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "TODO: Add Apple ID",
+        "appleTeamId": "TODO: Add Apple Team ID",
+        "appBundleIdentifier": "com.lentscanner.app"
+      }
+    }
+  }
+}
