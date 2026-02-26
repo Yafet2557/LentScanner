@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../constants/theme';
 import { getCurrentLentDay, daysUntilNextLent, getNextPascha } from '../utils/lentDates';
 
@@ -16,7 +17,12 @@ export default function LentCountdown() {
 
   if (isInLent) {
     return (
-      <View style={styles.container}>
+      <LinearGradient
+        colors={['#E8C96A', '#D4A843', '#B8892E']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.container}
+      >
         <Text style={styles.subtitle}>Great Lent</Text>
         <View style={styles.row}>
           <View style={styles.circle}>
@@ -25,21 +31,26 @@ export default function LentCountdown() {
           <View style={styles.textCol}>
             <Text style={styles.dayText}>Day {currentDay} of 55</Text>
             <Text style={styles.subText}>
-              {55 - currentDay} days until Pascha {paschaFormatted}
+              {55 - currentDay} days until Pascha · {paschaFormatted}
             </Text>
           </View>
         </View>
-      </View>
+      </LinearGradient>
     );
   }
 
   const daysUntil = daysUntilNextLent();
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#E8C96A', '#D4A843', '#B8892E']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
       <Text style={styles.subtitle}>Great Lent</Text>
       <Text style={styles.dayText}>Starts in {daysUntil} days</Text>
       <Text style={styles.subText}>Pascha: {paschaFormatted}</Text>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -48,12 +59,13 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     borderRadius: 16,
-    backgroundColor: colors.gold,
   },
   subtitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.background,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#12121266',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
     marginBottom: 8,
   },
   row: {
@@ -64,8 +76,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    borderWidth: 4,
-    borderColor: colors.background + '33',
+    borderWidth: 2,
+    borderColor: '#12121233',
+    backgroundColor: '#12121220',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -85,7 +98,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 13,
-    color: colors.background + 'B3',
+    color: '#121212AA',
     marginTop: 2,
   },
 });

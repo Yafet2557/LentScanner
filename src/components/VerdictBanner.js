@@ -1,35 +1,48 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../constants/theme';
 
 const configs = {
-  safe: { color: colors.safe, icon: 'checkmark-circle', label: 'Fasting Safe' },
-  notSafe: { color: colors.notSafe, icon: 'close-circle', label: 'Not Fasting Safe' },
-  caution: { color: colors.caution, icon: 'warning', label: 'Caution' },
+  safe: {
+    gradientColors: ['#1B5E20', '#2E7D32'],
+    icon: 'checkmark-circle',
+    label: 'Fasting Safe',
+  },
+  notSafe: {
+    gradientColors: ['#7F0000', '#B71C1C'],
+    icon: 'close-circle',
+    label: 'Not Fasting Safe',
+  },
+  caution: {
+    gradientColors: ['#3E2000', '#E65100'],
+    icon: 'warning',
+    label: 'Caution',
+  },
 };
 
 export default function VerdictBanner({ verdict }) {
   const config = configs[verdict] || configs.caution;
 
   return (
-    <View style={[styles.container, {
-      backgroundColor: config.color + '26',
-      borderColor: config.color + '4D',
-    }]}>
-      <Ionicons name={config.icon} size={28} color={config.color} style={{ marginRight: 12 }} />
-      <Text style={[styles.label, { color: config.color }]}>{config.label}</Text>
-    </View>
+    <LinearGradient
+      colors={config.gradientColors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
+      <Ionicons name={config.icon} size={30} color="#fff" style={{ marginRight: 12 }} />
+      <Text style={styles.label}>{config.label}</Text>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
     borderRadius: 16,
-    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -37,5 +50,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 20,
     fontWeight: '700',
+    color: '#fff',
+    letterSpacing: 0.3,
   },
 });
