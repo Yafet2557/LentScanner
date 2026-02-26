@@ -33,7 +33,8 @@
         {
           "cameraPermission": "Allow LentScanner to access your camera for barcode scanning."
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }
