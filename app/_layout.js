@@ -2,34 +2,46 @@ import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { ScanProvider } from '../src/context/ScanContext';
 import { RecipeProvider } from '../src/context/RecipeContext';
 import { colors } from '../src/constants/theme';
 
-export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
+// Separated so we can call useAuth() inside AuthProvider
+function InnerLayout() {
+  const { session, loading } = useAuth();
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
   const router = useRouter();
   const segments = useSegments();
 
+  // Only check onboarding once the user is logged in
   useEffect(() => {
-    (async () => {
-      const seen = await AsyncStorage.getItem('has_seen_onboarding');
+    if (!session) return;
+    AsyncStorage.getItem('has_seen_onboarding').then((seen) => {
       setNeedsOnboarding(!seen);
-      setIsReady(true);
-    })();
-  }, []);
+      setOnboardingChecked(true);
+    });
+  }, [session]);
 
+  // Navigation gate — runs whenever auth or onboarding state changes
   useEffect(() => {
-    if (!isReady) return;
+    if (loading) return;
+
+    const onAuth = segments[0] === 'auth';
     const onOnboarding = segments[0] === 'onboarding';
 
-    if (needsOnboarding && !onOnboarding) {
+    if (!session && !onAuth) {
+      router.replace('/auth');
+      return;
+    }
+
+    if (session && onboardingChecked && needsOnboarding && !onOnboarding) {
       router.replace('/onboarding');
     }
-  }, [isReady, needsOnboarding, segments]);
+  }, [loading, session, onboardingChecked, needsOnboarding, segments]);
 
-  if (!isReady) return null;
+  if (loading) return null;
 
   return (
     <ScanProvider>
@@ -42,6 +54,7 @@ export default function RootLayout() {
             animation: 'slide_from_right',
           }}
         >
+          <Stack.Screen name="auth" options={{ animation: 'fade' }} />
           <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="scan-result" />
@@ -49,5 +62,13 @@ export default function RootLayout() {
         </Stack>
       </RecipeProvider>
     </ScanProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <InnerLayout />
+    </AuthProvider>
   );
 }
