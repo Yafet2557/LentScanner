@@ -2,7 +2,15 @@
 
 An Orthodox Christian fasting companion app built with Expo and React Native.
 
-Scan any product barcode to instantly check if it's safe to eat during Orthodox fasting periods. Browse and search Lenten-compliant recipes with filters.
+---
+
+## Why I Built This
+
+I fast during Lent and eat fully vegan for the duration. Every time I picked up something at the store I'd have to flip it over, read through a wall of ingredients, and try to figure out if it was safe — it was tedious and easy to get wrong.
+
+I was inspired by calorie tracking apps like MyFitnessPal where you just scan a barcode and instantly get all the information you need. I wanted that same experience but for fasting: scan something, get a clear green or red.
+
+The other reason is my family. Some of them aren't fluent in English, so reading ingredient labels to determine what's fasting-safe is genuinely difficult for them. A barcode scan that gives a simple verdict removes that barrier entirely.
 
 ---
 
@@ -98,53 +106,3 @@ create policy "Users see own favorites" on favorite_recipes
 ```bash
 npx expo start
 ```
-
----
-
-## Project Structure
-
-```
-app/
-├── _layout.js              # Root layout, providers, auth gate
-├── onboarding.js           # First-launch intro
-├── auth.js                 # Login / sign up screen
-├── scan-result.js          # Product scan result screen
-├── (tabs)/
-│   ├── index.js            # Home dashboard
-│   ├── scanner.js          # Barcode scanner
-│   └── recipes.js          # Recipe browser
-└── recipe-detail/[id].js   # Recipe detail screen
-
-src/
-├── lib/supabase.js         # Supabase client
-├── context/
-│   ├── AuthContext.js      # Auth state (user, signIn, signOut)
-│   ├── ScanContext.js      # Scan state + history (local + cloud)
-│   └── RecipeContext.js    # Recipe state + favorites (local + cloud)
-├── services/
-│   ├── fastingChecker.js   # Ingredient analysis
-│   ├── openFoodFacts.js    # Open Food Facts API
-│   └── spoonacular.js      # Spoonacular API
-├── utils/
-│   ├── lentDates.js        # Orthodox Pascha calculator (Meeus algorithm)
-│   └── fastingCalendar.js  # Year-round fasting calendar engine
-└── constants/
-    ├── theme.js
-    └── nonFastingIngredients.js
-```
-
----
-
-## Fasting Logic
-
-Ingredient analysis uses word-boundary regex (`\b...\b`) to prevent false positives — "butternut squash" will not flag "butter", "eggplant" will not flag "egg".
-
-The Orthodox Pascha date is calculated using the **Meeus Julian algorithm** with a 13-day Julian-to-Gregorian calendar offset, valid for 1900–2099.
-
----
-
-## Known Limitations
-
-- Spoonacular free tier has 150 requests/day
-- Open Food Facts coverage varies by region; some barcodes may return no data
-- Fasting rules follow Greek Orthodox tradition; some rules differ by jurisdiction
