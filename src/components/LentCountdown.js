@@ -15,7 +15,6 @@ export default function LentCountdown() {
   const paschaFormatted = formatDate(pascha);
 
   if (isInLent) {
-    const progress = currentDay / 55;
     return (
       <View style={styles.container}>
         <Text style={styles.subtitle}>Great Lent</Text>
@@ -26,7 +25,7 @@ export default function LentCountdown() {
           <View style={styles.textCol}>
             <Text style={styles.dayText}>Day {currentDay} of 55</Text>
             <Text style={styles.subText}>
-              {55 - currentDay} days until Pascha · {paschaFormatted}
+              {55 - currentDay} days until Pascha {paschaFormatted}
             </Text>
           </View>
         </View>
