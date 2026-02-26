@@ -1,11 +1,41 @@
 import axios from 'axios';
-import { SPOONACULAR_API_KEY } from '../config';
+import { Platform } from 'react-native';
 
-const client = axios.create({
-  baseURL: 'https://api.spoonacular.com',
+const DIRECT_BASE_URL = 'https://api.spoonacular.com';
+const PROXY_BASE_URL =
+  process.env.EXPO_PUBLIC_SPOONACULAR_PROXY_URL || '/api/spoonacular';
+const DIRECT_API_KEY = process.env.EXPO_PUBLIC_SPOONACULAR_API_KEY || null;
+
+const shouldUseProxy =
+  Platform.OS === 'web' || Boolean(process.env.EXPO_PUBLIC_SPOONACULAR_PROXY_URL);
+
+const directClient = axios.create({
+  baseURL: DIRECT_BASE_URL,
   timeout: 15000,
-  params: { apiKey: SPOONACULAR_API_KEY },
 });
+
+const proxyClient = axios.create({
+  baseURL: PROXY_BASE_URL,
+  timeout: 15000,
+});
+
+async function spoonacularGet(endpoint, params = {}) {
+  if (shouldUseProxy) {
+    const { data } = await proxyClient.get('', { params: { endpoint, ...params } });
+    return data;
+  }
+
+  if (!DIRECT_API_KEY) {
+    throw new Error(
+      'Missing EXPO_PUBLIC_SPOONACULAR_API_KEY. Set it for native builds or configure EXPO_PUBLIC_SPOONACULAR_PROXY_URL.'
+    );
+  }
+
+  const { data } = await directClient.get(endpoint, {
+    params: { ...params, apiKey: DIRECT_API_KEY },
+  });
+  return data;
+}
 
 /**
  * Helper to find a nutrient's amount by name from the nutrients array.
@@ -40,7 +70,7 @@ export async function searchRecipes({
     if (mealType) params.type = mealType;
     if (maxReadyTime) params.maxReadyTime = maxReadyTime;
 
-    const { data } = await client.get('/recipes/complexSearch', { params });
+    const data = await spoonacularGet('/recipes/complexSearch', params);
     const results = data.results || [];
 
     return results.map((item) => {
@@ -72,13 +102,11 @@ export async function searchRecipes({
  */
 export async function getPopularRecipes() {
   try {
-    const { data } = await client.get('/recipes/complexSearch', {
-      params: {
-        diet: 'vegan',
-        sort: 'popularity',
-        addRecipeNutrition: true,
-        number: 8,
-      },
+    const data = await spoonacularGet('/recipes/complexSearch', {
+      diet: 'vegan',
+      sort: 'popularity',
+      addRecipeNutrition: true,
+      number: 8,
     });
     const results = data.results || [];
     return results.map((item) => {
@@ -121,7 +149,7 @@ export async function getRecipesByCategory(category) {
       params.sort = 'popularity';
     }
 
-    const { data } = await client.get('/recipes/complexSearch', { params });
+    const data = await spoonacularGet('/recipes/complexSearch', params);
     const results = data.results || [];
     return results.map((item) => {
       const nutrients = item.nutrition?.nutrients;
@@ -141,8 +169,8 @@ export async function getRecipesByCategory(category) {
 
 export async function getRecipeDetail(recipeId) {
   try {
-    const { data } = await client.get(`/recipes/${recipeId}/information`, {
-      params: { includeNutrition: true },
+    const data = await spoonacularGet(`/recipes/${recipeId}/information`, {
+      includeNutrition: true,
     });
 
     const nutrients = data.nutrition?.nutrients;

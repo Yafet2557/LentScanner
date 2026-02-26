@@ -2,38 +2,65 @@
 
 An Orthodox Christian fasting companion app built with Expo and React Native.
 
----
-
-## Why I Built This
-
-I fast during Lent and eat fully vegan for the duration. Every time I picked up something at the store I'd have to flip it over, read through a wall of ingredients, and try to figure out if it was safe — it was tedious and easy to get wrong.
-
-I was inspired by calorie tracking apps like MyFitnessPal where you just scan a barcode and instantly get all the information you need. I wanted that same experience but for fasting: scan something, get a clear green or red.
-
-The other reason is my family. Some of them aren't fluent in English, so reading ingredient labels to determine what's fasting-safe is genuinely difficult for them. A barcode scan that gives a simple verdict removes that barrier entirely.
-
----
-
 ## Features
 
-- **Barcode Scanner** — scans EAN/UPC barcodes and looks up ingredients via Open Food Facts. Flags meat, dairy, eggs, fish, and ambiguous ingredients using word-boundary regex to avoid false positives.
-- **Fasting Calendar** — full year-round Orthodox fasting engine covering Great Lent, Apostles' Fast, Dormition Fast, and Nativity Fast. Handles fast-free weeks, feast day relaxations, and Wednesday/Friday fasts.
-- **Recipe Finder** — search Lenten-compliant recipes by ingredient, meal type, cook time, and protein content via Spoonacular.
-- **Scan History** — last 20 scans stored locally with safe/flagged stats on the home screen.
-- **Favorites** — save recipes for quick access.
-- **Onboarding** — two-page swipeable intro shown on first launch.
-
----
+- Barcode scanner with ingredient analysis using Open Food Facts
+- Orthodox fasting calendar and fasting-day logic
+- Recipe finder powered by Spoonacular
+- Auth and sync with Supabase
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Expo SDK ~54, React Native 0.81.5 |
-| Navigation | expo-router (file-based Stack + Tabs) |
-| Auth & Sync | Supabase (email/password auth, cloud sync) |
-| Camera | expo-camera CameraView |
-| Icons | Ionicons via @expo/vector-icons |
-| Local Storage | AsyncStorage |
-| Secure Storage | expo-secure-store (auth session) |
-| APIs | Open Food Facts (free), Spoonacular (API key required) |
+- Expo SDK 54
+- React Native 0.81
+- expo-router
+- Supabase
+
+## Local Development
+
+1. Install deps:
+```bash
+npm install
+```
+
+2. Create `.env` from `.env.example` and set any values you need.
+
+3. Run:
+```bash
+npm run start
+```
+
+## Web Deploy (No App Store Needed)
+
+This repo is configured for one-click web deploy on both Vercel and Netlify:
+
+- `vercel.json` builds and publishes `dist`
+- `netlify.toml` builds and publishes `dist`
+- Both use a server-side Spoonacular proxy endpoint at `/api/spoonacular`
+
+### Required Hosting Environment Variable
+
+Set this in Vercel or Netlify:
+
+- `SPOONACULAR_API_KEY` (required)
+
+This key stays server-side and is not exposed to the browser bundle.
+
+## Environment Variables
+
+See `.env.example`:
+
+- `SPOONACULAR_API_KEY`
+  - Required for web deployments (server-side function)
+- `EXPO_PUBLIC_SPOONACULAR_PROXY_URL`
+  - Optional override, defaults to `/api/spoonacular`
+- `EXPO_PUBLIC_SPOONACULAR_API_KEY`
+  - Optional native fallback if you do not use the proxy for native builds
+
+## Build Web Locally
+
+```bash
+npm run build:web
+```
+
+Output is generated in `dist/`.
